@@ -1,0 +1,25 @@
+# Настройки сервера
+server:
+  port: 8082
+
+# Настройки приложения
+spring:
+  application:
+    name: rate-printer
+
+  cloud:
+    zookeeper:
+      connect-string: localhost:2181
+      discovery:
+        enabled: true
+        register: true
+        instance-host: localhost
+
+currency:
+  provider:
+    url: http://localhost:8081
+
+# Настройки логирования
+logging:
+  level:
+    com.example.rateprinter: INFO
