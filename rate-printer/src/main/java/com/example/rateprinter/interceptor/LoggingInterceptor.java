@@ -29,7 +29,6 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
 
         long duration = System.currentTimeMillis() - startTime;
 
-        // Копируем тело ответа в массив байтов
         byte[] responseBodyBytes = StreamUtils.copyToByteArray(response.getBody());
         String responseBody = new String(responseBodyBytes, StandardCharsets.UTF_8);
 
@@ -39,14 +38,9 @@ public class LoggingInterceptor implements ClientHttpRequestInterceptor {
                 duration,
                 responseBody);
 
-        // Возвращаем обертку, которая позволяет прочитать тело повторно
         return new BufferingClientHttpResponseWrapper(response, responseBodyBytes);
     }
 
-    /**
-     * Обертка для ClientHttpResponse, которая сохраняет тело ответа
-     * и позволяет читать его повторно
-     */
     private static class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
         private final ClientHttpResponse original;
