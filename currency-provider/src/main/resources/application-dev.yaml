@@ -1,0 +1,10 @@
+server:
+  port: 8081
+
+currency:
+  provider:
+    url: http://localhost:8081
+
+logging:
+  level:
+    com.example: DEBUG

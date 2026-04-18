@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: pact-postgres
+    environment:
+      POSTGRES_USER: pact
+      POSTGRES_PASSWORD: pact
+      POSTGRES_DB: pact
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - pact-network
+
+  pact-broker:
+    image: pactfoundation/pact-broker:latest
+    container_name: pact-broker
+    ports:
+      - "9292:9292"
+    environment:
+      PACT_BROKER_DATABASE_URL: "postgres://pact:pact@postgres:5432/pact"
+      PACT_BROKER_LOG_LEVEL: INFO
+      PACT_BROKER_PORT: "9292"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - pact-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  pact-network:
+    driver: bridge
