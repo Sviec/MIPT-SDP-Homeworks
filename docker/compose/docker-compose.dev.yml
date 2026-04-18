@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - app-network
+
+  currency-provider:
+    build:
+      context: ../../currency-provider
+      dockerfile: Dockerfile
+    container_name: currency-provider
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      PORT: 8081
+      ZOOKEEPER_URL: zookeeper:2181
+      INSTANCE_HOST: currency-provider
+    depends_on:
+      - zookeeper
+    networks:
+      - app-network
+
+  rate-printer:
+    build:
+      context: ../../rate-printer
+      dockerfile: Dockerfile
+    container_name: rate-printer
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      PORT: 8082
+      PROVIDER_URL: http://currency-provider:8081
+      ZOOKEEPER_URL: zookeeper:2181
+      INSTANCE_HOST: rate-printer
+    depends_on:
+      - zookeeper
+      - currency-provider
+    networks:
+      - app-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    depends_on:
+      - prometheus
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

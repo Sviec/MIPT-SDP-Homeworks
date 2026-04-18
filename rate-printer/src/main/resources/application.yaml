@@ -1,23 +1,32 @@
 # Настройки сервера
 server:
   port: 8082
+  shutdown: graceful
 
 # Настройки приложения
 spring:
   application:
     name: rate-printer
-
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   cloud:
     zookeeper:
-      connect-string: localhost:2181
+      connect-string: ${ZOOKEEPER_URL:localhost:2181}
       discovery:
         enabled: true
         register: true
-        instance-host: localhost
+        instance-host: ${INSTANCE_HOST:localhost}
+        instance-port: ${server.port}
+        initial-status: UP
+        instance-status: UP
+      session-timeout-ms: 30000
+      connection-timeout-ms: 5000
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 currency:
   provider:
-    url: http://localhost:8081
+    url: ${PROVIDER_URL:http://localhost:8081}
 
 # Настройки логирования
 logging:

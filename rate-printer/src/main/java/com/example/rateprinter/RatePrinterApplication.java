@@ -1,5 +1,6 @@
 package com.example.rateprinter;
 
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -22,5 +23,8 @@ public class RatePrinterApplication {
 		}
 		log.info("Application started - version: {}", version);
 	}
-
+	@PreDestroy
+	public void onShutdown() {
+		log.info("Performing cleanup before shutdown");
+	}
 }

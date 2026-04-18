@@ -1,20 +1,28 @@
 # Настройки сервера
 server:
   port: 8081
+  shutdown: graceful
 
 # Настройки приложения
 spring:
   application:
     name: currency-service
-
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   cloud:
     zookeeper:
-      connect-string: localhost:2181
+      connect-string: ${ZOOKEEPER_URL:localhost:2181}
       discovery:
         enabled: true
         register: true
-        instance-host: localhost
+        instance-host: ${INSTANCE_HOST:localhost}
         instance-port: ${server.port}
+        initial-status: UP
+        instance-status: UP
+      session-timeout-ms: 30000
+      connection-timeout-ms: 5000
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 
 # Настройки логирования
 logging:

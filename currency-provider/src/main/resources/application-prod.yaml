@@ -1,0 +1,10 @@
+server:
+  port: ${PORT}
+
+currency:
+  provider:
+    url: ${PROVIDER_URL}
+
+logging:
+  level:
+    com.example: WARN
